@@ -1,0 +1,323 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		E84180CB1905C1BC004E2697 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E84180CA1905C1BC004E2697 /* XCTest.framework */; };
+		E84180D11905C1BC004E2697 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E84180CF1905C1BC004E2697 /* InfoPlist.strings */; };
+		E84180D31905C1BC004E2697 /* CryptoFileHandleTest.m in Sources */ = {isa = PBXBuildFile; fileRef = E84180D21905C1BC004E2697 /* CryptoFileHandleTest.m */; };
+		E84180DB1905C201004E2697 /* SMCryptoFileHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = E84180DA1905C201004E2697 /* SMCryptoFileHandle.m */; };
+		E84180DE1905C228004E2697 /* SMCryptoFile.c in Sources */ = {isa = PBXBuildFile; fileRef = E84180DC1905C228004E2697 /* SMCryptoFile.c */; };
+		E84180E01905CD74004E2697 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E84180DF1905CD74004E2697 /* libz.dylib */; };
+		E8B23FE719065685007EF27B /* TestHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = E8B23FE619065685007EF27B /* TestHelper.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		E84180C71905C1BC004E2697 /* CryptoFileHandleTest.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CryptoFileHandleTest.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E84180CA1905C1BC004E2697 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		E84180CE1905C1BC004E2697 /* CryptoFileHandleTest-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "CryptoFileHandleTest-Info.plist"; sourceTree = "<group>"; };
+		E84180D01905C1BC004E2697 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		E84180D21905C1BC004E2697 /* CryptoFileHandleTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CryptoFileHandleTest.m; sourceTree = "<group>"; };
+		E84180D41905C1BC004E2697 /* CryptoFileHandleTest-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CryptoFileHandleTest-Prefix.pch"; sourceTree = "<group>"; };
+		E84180D91905C201004E2697 /* SMCryptoFileHandle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMCryptoFileHandle.h; sourceTree = "<group>"; };
+		E84180DA1905C201004E2697 /* SMCryptoFileHandle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMCryptoFileHandle.m; sourceTree = "<group>"; };
+		E84180DC1905C228004E2697 /* SMCryptoFile.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = SMCryptoFile.c; path = ../../SMCryptoFile.c; sourceTree = "<group>"; };
+		E84180DD1905C228004E2697 /* SMCryptoFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SMCryptoFile.h; path = ../../SMCryptoFile.h; sourceTree = "<group>"; };
+		E84180DF1905CD74004E2697 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		E8B23FE519065685007EF27B /* TestHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestHelper.h; sourceTree = "<group>"; };
+		E8B23FE619065685007EF27B /* TestHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestHelper.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E84180C41905C1BC004E2697 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E84180E01905CD74004E2697 /* libz.dylib in Frameworks */,
+				E84180CB1905C1BC004E2697 /* XCTest.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		E84180BC1905C19F004E2697 = {
+			isa = PBXGroup;
+			children = (
+				E84180D81905C1DB004E2697 /* SMCryptoFileHandle */,
+				E84180CC1905C1BC004E2697 /* CryptoFileHandleTest */,
+				E84180C91905C1BC004E2697 /* Frameworks */,
+				E84180C81905C1BC004E2697 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E84180C81905C1BC004E2697 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E84180C71905C1BC004E2697 /* CryptoFileHandleTest.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E84180C91905C1BC004E2697 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E84180DF1905CD74004E2697 /* libz.dylib */,
+				E84180CA1905C1BC004E2697 /* XCTest.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E84180CC1905C1BC004E2697 /* CryptoFileHandleTest */ = {
+			isa = PBXGroup;
+			children = (
+				E8B23FE419065675007EF27B /* Shared */,
+				E84180D21905C1BC004E2697 /* CryptoFileHandleTest.m */,
+				E84180CD1905C1BC004E2697 /* Supporting Files */,
+			);
+			path = CryptoFileHandleTest;
+			sourceTree = "<group>";
+		};
+		E84180CD1905C1BC004E2697 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				E84180CE1905C1BC004E2697 /* CryptoFileHandleTest-Info.plist */,
+				E84180CF1905C1BC004E2697 /* InfoPlist.strings */,
+				E84180D41905C1BC004E2697 /* CryptoFileHandleTest-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		E84180D81905C1DB004E2697 /* SMCryptoFileHandle */ = {
+			isa = PBXGroup;
+			children = (
+				E84180D91905C201004E2697 /* SMCryptoFileHandle.h */,
+				E84180DA1905C201004E2697 /* SMCryptoFileHandle.m */,
+				E84180DD1905C228004E2697 /* SMCryptoFile.h */,
+				E84180DC1905C228004E2697 /* SMCryptoFile.c */,
+			);
+			name = SMCryptoFileHandle;
+			path = "../../sources/extra/objective-c";
+			sourceTree = "<group>";
+		};
+		E8B23FE419065675007EF27B /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				E8B23FE519065685007EF27B /* TestHelper.h */,
+				E8B23FE619065685007EF27B /* TestHelper.m */,
+			);
+			name = Shared;
+			path = ../../shared;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E84180C61905C1BC004E2697 /* CryptoFileHandleTest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E84180D51905C1BC004E2697 /* Build configuration list for PBXNativeTarget "CryptoFileHandleTest" */;
+			buildPhases = (
+				E84180C31905C1BC004E2697 /* Sources */,
+				E84180C41905C1BC004E2697 /* Frameworks */,
+				E84180C51905C1BC004E2697 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CryptoFileHandleTest;
+			productName = CryptoFileHandleTest;
+			productReference = E84180C71905C1BC004E2697 /* CryptoFileHandleTest.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E84180BD1905C19F004E2697 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0510;
+			};
+			buildConfigurationList = E84180C01905C19F004E2697 /* Build configuration list for PBXProject "CryptoFileHandleTest" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = E84180BC1905C19F004E2697;
+			productRefGroup = E84180C81905C1BC004E2697 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E84180C61905C1BC004E2697 /* CryptoFileHandleTest */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		E84180C51905C1BC004E2697 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E84180D11905C1BC004E2697 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E84180C31905C1BC004E2697 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E84180DB1905C201004E2697 /* SMCryptoFileHandle.m in Sources */,
+				E84180D31905C1BC004E2697 /* CryptoFileHandleTest.m in Sources */,
+				E84180DE1905C228004E2697 /* SMCryptoFile.c in Sources */,
+				E8B23FE719065685007EF27B /* TestHelper.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		E84180CF1905C1BC004E2697 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				E84180D01905C1BC004E2697 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		E84180C11905C19F004E2697 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		E84180C21905C19F004E2697 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		E84180D61905C1BC004E2697 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "CryptoFileHandleTest/CryptoFileHandleTest-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = "CryptoFileHandleTest/CryptoFileHandleTest-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Debug;
+		};
+		E84180D71905C1BC004E2697 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "CryptoFileHandleTest/CryptoFileHandleTest-Prefix.pch";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = "CryptoFileHandleTest/CryptoFileHandleTest-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		E84180C01905C19F004E2697 /* Build configuration list for PBXProject "CryptoFileHandleTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E84180C11905C19F004E2697 /* Debug */,
+				E84180C21905C19F004E2697 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E84180D51905C1BC004E2697 /* Build configuration list for PBXNativeTarget "CryptoFileHandleTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E84180D61905C1BC004E2697 /* Debug */,
+				E84180D71905C1BC004E2697 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = E84180BD1905C19F004E2697 /* Project object */;
+}

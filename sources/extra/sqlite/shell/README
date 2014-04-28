@@ -1,0 +1,1 @@
+This is the official sqlite3 shell patched to work with SMSQLiteCryptoVFS, to facilitate debugging of crypted databases.
