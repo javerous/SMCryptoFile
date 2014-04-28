@@ -13,7 +13,7 @@ There is currently no library. You will have to include files in your project.
 ## SMCryptoFile ##
 
 */sources/SMCryptoFile.h*  
-*/sources/SMCryptoFile.c*
+*/sources/SMCryptoFile.c*  
 */tests/CryptoFileTest/*
 
 This is the main code. This allow you to do random read / write in a crypted file.
@@ -31,7 +31,7 @@ Compatible OS X 10.7.0 minimum and iOS 5.0 minimum.
 ## SMCryptoFileHandle ##
 
 */sources/extra/objective-c/SMCryptoFileHandle.h*  
-*/sources/extra/objective-c/SMCryptoFileHandle.m*
+*/sources/extra/objective-c/SMCryptoFileHandle.m*  
 */tests/CryptoFileHandleTest/*
 
 This is an Objective-C wrapper for SMCryptoFile. It adopt the broad outlines of NSFileHandle interface.
@@ -40,7 +40,7 @@ This is an Objective-C wrapper for SMCryptoFile. It adopt the broad outlines of 
 ## SMSQLiteCryptoVFS ##
 
 */sources/extra/sqlite/SMSQLiteCryptoVFS.h*  
-*/sources/extra/sqlite/SMSQLiteCryptoVFS.c*
+*/sources/extra/sqlite/SMSQLiteCryptoVFS.c*  
 */tests/CryptoSQLiteTest/*
 
 This is an SQLite VFS using SMCryptoFile as I/O back-end.
