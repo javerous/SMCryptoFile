@@ -96,9 +96,9 @@ static dispatch_queue_t	gMainBasesQueue = NULL;
 static VFSCryptList		*gSettingsList = NULL;
 static VFSCryptList		*gMainBasesList = NULL;
 
-static volatile int32_t	gKeySize = SMCryptoFileKeySize128;
+static sig_atomic_t		gKeySize = SMCryptoFileKeySize128;
 
-static volatile SMCryptoFileError gCryptoFileError  = SMCryptoFileErrorNo;
+static sig_atomic_t		gCryptoFileError  = SMCryptoFileErrorNo;
 
 
 
@@ -362,7 +362,7 @@ bool SMSQLiteCryptoVFSChangePassword(sqlite3 *cryptedBase, const char *newPasswo
 SMCryptoFileError SMSQLiteCryptoVFSLastFileCryptoError(void)
 {
 	OSMemoryBarrier();
-	return gCryptoFileError;
+	return (SMCryptoFileError)gCryptoFileError;
 }
 
 static void SMSQLiteCryptoVFSSetFileCryptoError(SMCryptoFileError error)
@@ -750,6 +750,8 @@ static int VFSCryptRead(sqlite3_file *pFile, void *zBuf, int iAmt, sqlite_int64 
 {
 	VFSCryptFile *p = (VFSCryptFile *)pFile;
 
+	SMSQLiteCryptoVFSSetFileCryptoError(SMCryptoFileErrorNo);
+	
 	// Check file.
 	if (p->file == NULL)
 	{
@@ -794,6 +796,8 @@ static int VFSCryptWrite(sqlite3_file *pFile, const void *zBuf, int iAmt, sqlite
 {
 	VFSCryptFile *p = (VFSCryptFile *)pFile;
 	
+	SMSQLiteCryptoVFSSetFileCryptoError(SMCryptoFileErrorNo);
+
 	// Check file.
 	if (p->file == NULL)
 	{
@@ -826,6 +830,8 @@ static int VFSCryptTruncate(sqlite3_file *pFile, sqlite_int64 size)
 {
 	VFSCryptFile *p = (VFSCryptFile *)pFile;
 	
+	SMSQLiteCryptoVFSSetFileCryptoError(SMCryptoFileErrorNo);
+
 	// Check file.
 	if (p->file == NULL)
 	{
@@ -850,6 +856,8 @@ static int VFSCryptSync(sqlite3_file *pFile, int flags)
 {
 	VFSCryptFile *p = (VFSCryptFile *)pFile;
 	
+	SMSQLiteCryptoVFSSetFileCryptoError(SMCryptoFileErrorNo);
+
 	// Check file.
 	if (p->file == NULL)
 	{
@@ -880,6 +888,8 @@ static int VFSCryptFileSize(sqlite3_file *pFile, sqlite_int64 *pSize)
 {
 	VFSCryptFile *p = (VFSCryptFile *)pFile;
 	
+	SMSQLiteCryptoVFSSetFileCryptoError(SMCryptoFileErrorNo);
+
 	// Check file.
 	if (p->file == NULL)
 	{
