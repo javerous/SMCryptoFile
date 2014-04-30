@@ -594,14 +594,10 @@ static int VFSCryptOpen(sqlite3_vfs *pVfs, const char *zName, sqlite3_file *pFil
 			char *mainPath = VFSCryptMainDatabasePath(zName);
 			
 			__block SMCryptoFile *mainFile = NULL;
-			
-			if (mainPath)
-			{
-				// > Get crypto object.
-				dispatch_sync(gMainBasesQueue, ^{
-					mainFile = VFSCryptListGetItem(gMainBasesList, mainPath);
-				});
-			}
+
+			dispatch_sync(gMainBasesQueue, ^{
+				mainFile = VFSCryptListGetItem(gMainBasesList, mainPath);
+			});
 			
 			// Create sub crypto file.
 			if (mainFile)
