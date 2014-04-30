@@ -96,9 +96,9 @@ static dispatch_queue_t	gMainBasesQueue = NULL;
 static VFSCryptList		*gSettingsList = NULL;
 static VFSCryptList		*gMainBasesList = NULL;
 
-static sig_atomic_t		gKeySize = SMCryptoFileKeySize128;
-
-static sig_atomic_t		gCryptoFileError  = SMCryptoFileErrorNo;
+// Global public vars. Enums should be reduced as int, which is atomic on x86 and ARM, but it's always better to explicit things.
+static _Atomic(SMCryptoFileKeySize)	gKeySize = SMCryptoFileKeySize128;
+static _Atomic(SMCryptoFileError)	gCryptoFileError = SMCryptoFileErrorNo;
 
 
 
@@ -292,8 +292,7 @@ void SMSQLiteCryptoVFSDefaultsSetKeySize(SMCryptoFileKeySize keySize)
 		case SMCryptoFileKeySize192:
 		case SMCryptoFileKeySize256:
 		{
-			gKeySize = keySize;
-			OSMemoryBarrier();
+			__c11_atomic_store(&gKeySize, keySize, __ATOMIC_RELAXED);
 			break;
 		}
 	}
@@ -301,8 +300,24 @@ void SMSQLiteCryptoVFSDefaultsSetKeySize(SMCryptoFileKeySize keySize)
 
 static SMCryptoFileKeySize SMSQLiteCryptoVFSDefaultsGetKeySize(void)
 {
-	OSMemoryBarrier();
-	return gKeySize;
+	return __c11_atomic_load(&gKeySize, __ATOMIC_RELAXED);
+}
+
+
+
+/*
+** Errors
+*/
+#pragma mark - Errors
+
+SMCryptoFileError SMSQLiteCryptoVFSLastFileCryptoError(void)
+{
+	return __c11_atomic_load(&gCryptoFileError, __ATOMIC_RELAXED);
+}
+
+static void SMSQLiteCryptoVFSSetFileCryptoError(SMCryptoFileError error)
+{
+	__c11_atomic_store(&gCryptoFileError, error, __ATOMIC_RELAXED);
 }
 
 
@@ -350,25 +365,6 @@ bool SMSQLiteCryptoVFSChangePassword(sqlite3 *cryptedBase, const char *newPasswo
 	
 	// Chnage password.
 	return SMCryptoFileChangePassword(file, newPassword, error);
-}
-
-
-
-/*
-** Errors
-*/
-#pragma mark - Errors
-
-SMCryptoFileError SMSQLiteCryptoVFSLastFileCryptoError(void)
-{
-	OSMemoryBarrier();
-	return (SMCryptoFileError)gCryptoFileError;
-}
-
-static void SMSQLiteCryptoVFSSetFileCryptoError(SMCryptoFileError error)
-{
-	gCryptoFileError = error;
-	OSMemoryBarrier();
 }
 
 

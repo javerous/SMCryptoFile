@@ -47,10 +47,10 @@ void			SMSQLiteCryptoVFSSettingsRemove(const char *uuid);
 // -- Defaults --
 void			SMSQLiteCryptoVFSDefaultsSetKeySize(SMCryptoFileKeySize keySize); // Define the key size to use when creating temporary crypted file.
 
-// -- Tools --
-bool			SMSQLiteCryptoVFSChangePassword(sqlite3 *cryptedBase, const char *newPassword, SMCryptoFileError *error); // Change the password of the crypted file currently in use by the cryptedBase.
-
 // -- Errors --
 SMCryptoFileError SMSQLiteCryptoVFSLastFileCryptoError(void); // Return last SMCryptoFile error.
+
+// -- Tools --
+bool			SMSQLiteCryptoVFSChangePassword(sqlite3 *cryptedBase, const char *newPassword, SMCryptoFileError *error); // Change the password of the crypted file currently in use by the cryptedBase.
 
 #endif
