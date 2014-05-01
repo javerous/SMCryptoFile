@@ -297,8 +297,9 @@ SMCryptoFile * SMCryptoFileCreate(const char *path, const char *password, SMCryp
 		return NULL;
 	}
 	
+	
 	// Create a new file.
-	int fd = open(path, O_RDWR | O_CREAT, 0777);
+	int fd = open(path, O_RDWR | O_CREAT, (S_IRUSR | S_IWUSR) | (S_IRGRP | S_IWGRP) | (S_IROTH | S_IWOTH)); // mode masked by umask.
 	
 	if (fd == -1)
 	{
@@ -447,7 +448,7 @@ SMCryptoFile *	SMCryptoFileCreateImpersonated(SMCryptoFile *original, const char
 	}
 	
 	// Create a new file.
-	int fd = open(path, O_RDWR | O_CREAT, 0777);
+	int fd = open(path, O_RDWR | O_CREAT, (S_IRUSR | S_IWUSR) | (S_IRGRP | S_IWGRP) | (S_IROTH | S_IWOTH)); // mode masked by umask.
 	
 	if (fd == -1)
 	{
@@ -570,7 +571,7 @@ SMCryptoFile * SMCryptoFileCreateVolatile(const char *path, SMCryptoFileKeySize 
 	
 	if (path)
 	{
-		fd = open(path, O_RDWR | O_CREAT, 0777);
+		fd = open(path, O_RDWR | O_CREAT, (S_IRUSR | S_IWUSR) | (S_IRGRP | S_IWGRP) | (S_IROTH | S_IWOTH)); // mode masked by umask.
 		
 		if (fd == -1)
 		{
