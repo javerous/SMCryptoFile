@@ -27,8 +27,8 @@
 		E8B2400C19066985007EF27B /* SMCryptoFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMCryptoFile.h; sourceTree = "<group>"; };
 		E8B2400D19066985007EF27B /* SMCryptoFile.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SMCryptoFile.c; sourceTree = "<group>"; };
 		E8B2400F190669AF007EF27B /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
-		E8B2401119066A40007EF27B /* SMSQLiteCryptoVFS.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = SMSQLiteCryptoVFS.c; path = extra/sqlite/SMSQLiteCryptoVFS.c; sourceTree = "<group>"; };
-		E8B2401319066A74007EF27B /* SMSQLiteCryptoVFS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SMSQLiteCryptoVFS.h; path = extra/sqlite/SMSQLiteCryptoVFS.h; sourceTree = "<group>"; };
+		E8B2401119066A40007EF27B /* SMSQLiteCryptoVFS.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = SMSQLiteCryptoVFS.c; path = Extra/SQLite/SMSQLiteCryptoVFS.c; sourceTree = "<group>"; };
+		E8B2401319066A74007EF27B /* SMSQLiteCryptoVFS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SMSQLiteCryptoVFS.h; path = Extra/SQLite/SMSQLiteCryptoVFS.h; sourceTree = "<group>"; };
 		E8B2401419066B15007EF27B /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		E8F7C4B01909973A0041895E /* TestHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestHelper.h; sourceTree = "<group>"; };
 		E8F7C4B11909973A0041895E /* TestHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestHelper.m; sourceTree = "<group>"; };
@@ -105,7 +105,7 @@
 				E8B2401119066A40007EF27B /* SMSQLiteCryptoVFS.c */,
 			);
 			name = SMCryptoFile;
-			path = ../../sources;
+			path = ../../Sources;
 			sourceTree = "<group>";
 		};
 		E8F7C4AF1909971E0041895E /* Shared */ = {
@@ -115,7 +115,7 @@
 				E8F7C4B11909973A0041895E /* TestHelper.m */,
 			);
 			name = Shared;
-			path = ../../shared;
+			path = ../../Shared;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

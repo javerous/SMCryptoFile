@@ -101,7 +101,7 @@
 				E84180DC1905C228004E2697 /* SMCryptoFile.c */,
 			);
 			name = SMCryptoFileHandle;
-			path = "../../sources/extra/objective-c";
+			path = "../../Sources/Extra/Objective-C";
 			sourceTree = "<group>";
 		};
 		E8B23FE419065675007EF27B /* Shared */ = {
@@ -111,7 +111,7 @@
 				E8B23FE619065685007EF27B /* TestHelper.m */,
 			);
 			name = Shared;
-			path = ../../shared;
+			path = ../../Shared;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

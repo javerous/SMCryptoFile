@@ -115,7 +115,7 @@
 				E839656F18F6CA5F00CA591B /* SMCryptoFile.c */,
 			);
 			name = SMCryptoFile;
-			path = ../../sources;
+			path = ../../Sources;
 			sourceTree = "<group>";
 		};
 		E839658518F6F70400CA591B /* Shared */ = {
@@ -125,7 +125,7 @@
 				E8B23FE21906566A007EF27B /* TestHelper.m */,
 			);
 			name = Shared;
-			path = ../../shared;
+			path = ../../Shared;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
