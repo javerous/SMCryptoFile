@@ -1,1 +1,15 @@
-This is the official sqlite3 shell patched to work with SMSQLiteCryptoVFS, to facilitate debugging of crypted databases.
+== About ==
+This is the official sqlite3 shell patched to work with SMSQLiteCryptoVFS, to facilitate debugging of encrypted databases.
+
+With this shell, it's possible to :
+- Open encrypted or standard database files.
+- Create encrypted or standard database files.
+- Backup to encrypted or standard database files.
+- Restore from encrypted or standard database files.
+
+
+== Build ==
+
+Simply execute "build.sh".
+
+You should have Xcode installed.
