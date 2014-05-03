@@ -104,7 +104,7 @@ uint64_t		SMCryptoFileSize(SMCryptoFile *file);
 // -- I/O --
 bool			SMCryptoFileTruncate(SMCryptoFile *file, uint64_t length, SMCryptoFileError *error);
 
-bool			SMCryptoFileSeek(SMCryptoFile *obj, off_t offset, SMCryptoFileSeekWhence whence, SMCryptoFileError *error);
+bool			SMCryptoFileSeek(SMCryptoFile *obj, int64_t offset, SMCryptoFileSeekWhence whence, SMCryptoFileError *error);
 uint64_t		SMCryptoFileTell(SMCryptoFile *file);
 
 int64_t			SMCryptoFileRead(SMCryptoFile *file, void *ptr, uint64_t size, SMCryptoFileError *error); // -1 -> error; 0 -> eof

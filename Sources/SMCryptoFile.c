@@ -965,7 +965,7 @@ uint64_t SMCryptoFileSize(SMCryptoFile *obj)
 */
 #pragma mark - I/O
 
-bool SMCryptoFileSeek(SMCryptoFile *obj, off_t offset, SMCryptoFileSeekWhence whence, SMCryptoFileError *error)
+bool SMCryptoFileSeek(SMCryptoFile *obj, int64_t offset, SMCryptoFileSeekWhence whence, SMCryptoFileError *error)
 {
 	// Check arguments.
 	SMCryptoFileError terror;
@@ -1001,7 +1001,7 @@ bool SMCryptoFileSeek(SMCryptoFile *obj, off_t offset, SMCryptoFileSeekWhence wh
 		case SMCryptoFileSeekCurrent:
 		{
 			// > Check integer overflow.
-			if (offset > 0 && obj->currentOffset > OFF_MAX - offset)
+			if (offset > 0 && obj->currentOffset > LLONG_MAX - offset)
 			{
 				*error = SMCryptoFileErrorArguments;
 				return false;
@@ -1026,7 +1026,7 @@ bool SMCryptoFileSeek(SMCryptoFile *obj, off_t offset, SMCryptoFileSeekWhence wh
 		case SMCryptoFileSeekEnd:
 		{
 			// > Check integer overflow.
-			if (offset > 0 && obj->header.dataLen > OFF_MAX - offset)
+			if (offset > 0 && obj->header.dataLen > LLONG_MAX - offset)
 			{
 				*error = SMCryptoFileErrorArguments;
 				return false;

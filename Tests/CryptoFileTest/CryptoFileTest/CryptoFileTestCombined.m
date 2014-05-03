@@ -351,7 +351,7 @@
 		}
 		
 		// Over-write chunk.
-		off_t delta = 20;
+		int64_t delta = 20;
 		
 		if (delta > SMCryptoFileTell(cryptoFile))
 			delta = SMCryptoFileTell(cryptoFile);
