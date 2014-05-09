@@ -80,6 +80,51 @@ NSString * const SMCryptoFileHandleErrorDomain = @"com.sourcemac.smcryptofilehan
 	return [[SMCryptoFileHandle alloc] initWithCryptoFile:file];
 }
 
++ (instancetype)cryptoFileHandleByImpersonatingFileHandle:(SMCryptoFileHandle *)handle path:(NSString *)path error:(NSError **)error
+{
+	// Check argument.
+	if (!handle)
+	{
+		if (error)
+			*error = [NSError errorWithDomain:SMCryptoFileHandleErrorDomain code:SMCryptoFileErrorArguments userInfo:nil];
+		
+		return nil;
+	}
+	
+	// Create a file.
+	SMCryptoFileError	fileError;
+	SMCryptoFile		*file = SMCryptoFileCreateImpersonated(handle->_file, [path UTF8String], &fileError);
+	
+	if (!file)
+	{
+		if (error)
+			*error = [NSError errorWithDomain:SMCryptoFileHandleErrorDomain code:fileError userInfo:nil];
+		
+		return nil;
+	}
+	
+	// Create and return a file handle.
+	return [[SMCryptoFileHandle alloc] initWithCryptoFile:file];
+}
+
++ (instancetype)cryptoFileHandleByCreatingVolatileFileAtPath:(NSString *)path keySize:(SMCryptoFileKeySize)keySize error:(NSError **)error
+{
+	// Create a file.
+	SMCryptoFileError	fileError;
+	SMCryptoFile		*file = SMCryptoFileCreateVolatile([path UTF8String],  keySize, &fileError);
+	
+	if (!file)
+	{
+		if (error)
+			*error = [NSError errorWithDomain:SMCryptoFileHandleErrorDomain code:fileError userInfo:nil];
+		
+		return nil;
+	}
+	
+	// Create and return a file handle.
+	return [[SMCryptoFileHandle alloc] initWithCryptoFile:file];
+}
+
 + (instancetype)cryptoFileHandleByOpeningFileAtPath:(NSString *)path password:(NSString *)password readOnly:(BOOL)readOnly error:(NSError **)error
 {
 	// Open a file.

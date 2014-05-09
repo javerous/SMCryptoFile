@@ -334,6 +334,38 @@
 		return;
 	}
 	
+	// Quick test impersonation.
+	SMCryptoFileHandle	*cryptoHandleImpersonated = nil;
+	NSString			*cryptoPathImpersonated = [TestHelper generateTempPath];
+
+	[cleaner postponeBlock:^{
+		[cryptoHandleImpersonated closeFileAndReturnError:nil];
+		[[NSFileManager defaultManager] removeItemAtPath:cryptoPathImpersonated error:nil];
+	}];
+	
+	cryptoHandleImpersonated = [SMCryptoFileHandle cryptoFileHandleByImpersonatingFileHandle:cryptoHandle path:cryptoPathImpersonated error:&error];
+
+	if (!cryptoHandleImpersonated)
+	{
+		XCTFail(@"Can't create a crypto file handle by impersonation (%@)", [TestHelper stringWithError:(SMCryptoFileError)error.code]);
+		return;
+	}
+	
+	// Quick test volatile.
+	SMCryptoFileHandle	*cryptoHandleVolatile = nil;
+	
+	[cleaner postponeBlock:^{
+		[cryptoHandleVolatile closeFileAndReturnError:nil];
+	}];
+	
+	cryptoHandleVolatile = [SMCryptoFileHandle cryptoFileHandleByCreatingVolatileFileAtPath:nil keySize:SMCryptoFileKeySize128 error:&error];
+	
+	if (!cryptoHandleVolatile)
+	{
+		XCTFail(@"Can't create a volatile crypto file handle (%@)", [TestHelper stringWithError:(SMCryptoFileError)error.code]);
+		return;
+	}
+
 	// Keep cleaner alive up there.
 	[cleaner self];
 }

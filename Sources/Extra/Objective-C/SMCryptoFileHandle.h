@@ -40,6 +40,9 @@ NSString * const SMCryptoFileHandleErrorDomain;
 
 // -- Getting a Crypto File Handle --
 + (instancetype)cryptoFileHandleByCreatingFileAtPath:(NSString *)path password:(NSString *)password keySize:(SMCryptoFileKeySize)keySize error:(NSError **)error;
++ (instancetype)cryptoFileHandleByImpersonatingFileHandle:(SMCryptoFileHandle *)handle path:(NSString *)path error:(NSError **)error;		// Impersonate a crypto file by copying its prefix (header and datas are NOT copied). The impersonation itself is thread safe.
++ (instancetype)cryptoFileHandleByCreatingVolatileFileAtPath:(NSString *)path keySize:(SMCryptoFileKeySize)keySize error:(NSError **)error;	// Create a crypto file with a one-time random password. Usefull to have a temporary crypted cache. If path is nil, a temporary path is generated.
+
 + (instancetype)cryptoFileHandleByOpeningFileAtPath:(NSString *)path password:(NSString *)password readOnly:(BOOL)readOnly error:(NSError **)error;
 
 // -- Changing a Crypto File settings --

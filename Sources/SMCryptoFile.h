@@ -89,7 +89,7 @@ bool			SMCryptoFileCanOpen(const char *path);
 // -- Instance --
 SMCryptoFile *	SMCryptoFileCreate(const char *path, const char *password, SMCryptoFileKeySize keySize, SMCryptoFileError *error);
 SMCryptoFile *	SMCryptoFileCreateImpersonated(SMCryptoFile *original, const char *path, SMCryptoFileError *error);		// Impersonate a crypto file by copying its prefix (header and datas are NOT copied). The impersonation itself is thread safe.
-SMCryptoFile *	SMCryptoFileCreateVolatile(const char *path, SMCryptoFileKeySize keySize, SMCryptoFileError *error);	// Create a crypto file with a one-time random password. Usefull to have a temporary crypted cache.
+SMCryptoFile *	SMCryptoFileCreateVolatile(const char *path, SMCryptoFileKeySize keySize, SMCryptoFileError *error);	// Create a crypto file with a one-time random password. Usefull to have a temporary crypted cache. If path is NULL, a temporary path is generated.
 
 SMCryptoFile *	SMCryptoFileOpen(const char *path, const char *password, bool readOnly, SMCryptoFileError *error);
 
