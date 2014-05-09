@@ -1845,7 +1845,6 @@ static bool SMCryptoFileCachePrepareWritingAtCurrentOffset(SMCryptoFile *obj, SM
 	return true;
 }
 
-
 #pragma mark > Block crypt / decrypt
 
 static bool SMCryptoFileBlockCrypt(SMCryptoFile *obj, const void *block, uint64_t blocknum, void *output)
@@ -1854,9 +1853,9 @@ static bool SMCryptoFileBlockCrypt(SMCryptoFile *obj, const void *block, uint64_
 	uint8_t		iv_tweak[kCCBlockSizeAES128];
 	uint64_t	*tw_int = (uint64_t *)iv_tweak;
 	
-	// XXX There is any norm defined somewhere to generate the block number tweak ?
-	tw_int[0] = OSSwapHostToBigInt64(blocknum);
-	tw_int[1] = OSSwapHostToLittleInt64(blocknum);
+	// Generate the block number tweak.
+	tw_int[0] = OSSwapHostToLittleInt64(blocknum);
+	tw_int[1] = 0;
 	
 	// Crypt.
 	CCCryptorStatus status = CCCryptorEncryptDataBlock(obj->dataEncrypt, iv_tweak, block, kCFFileBlockSize, output);
@@ -1870,9 +1869,9 @@ static bool SMCryptoFileBlockDecrypt(SMCryptoFile *obj, const void *block, uint6
 	uint8_t		iv_tweak[kCCBlockSizeAES128];
 	uint64_t	*tw_int = (uint64_t *)iv_tweak;
 	
-	// XXX There is any norm defined somewhere to generate the block number tweak ?
-	tw_int[0] = OSSwapHostToBigInt64(blocknum);
-	tw_int[1] = OSSwapHostToLittleInt64(blocknum);
+	// Generate the block number tweak.
+	tw_int[0] = OSSwapHostToLittleInt64(blocknum);
+	tw_int[1] = 0;
 	
 	// Decrypt.
 	CCCryptorStatus status = CCCryptorDecryptDataBlock(obj->dataDecrypt, iv_tweak, block, kCFFileBlockSize, output);
