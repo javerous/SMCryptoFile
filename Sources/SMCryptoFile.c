@@ -57,11 +57,59 @@
 */
 #pragma mark - Macros
 
+
 // Debug log.
-#if DEBUG_LOG
+#if defined(DEBUG_LOG) && DEBUG_LOG
 #	define SMCryptoDebugLog(Str, Arg...) fprintf(stderr, Str, ## Arg)
 #else
 #	define SMCryptoDebugLog(Str, Arg...) ((void)0)
+#endif
+
+// Debugs.
+#if defined(DEBUG) && DEBUG
+
+#include <dispatch/dispatch.h>
+#include <libkern/OSAtomic.h>
+
+static int32_t gPreadCount = 0;
+static int32_t gPwriteCount = 0;
+
+static int64_t gPreadSize = 0;
+static int64_t gPwriteSize = 0;
+
+static dispatch_once_t gOnceToken;
+
+#	define sm_init()																				\
+		({																							\
+			dispatch_once(&gOnceToken, ^{															\
+				atexit_b(^{																			\
+					fprintf(stderr, "pread:  count=%d; size=%lld\n", gPreadCount, gPreadSize);		\
+					fprintf(stderr, "pwrite: count=%d; size=%lld\n", gPwriteCount, gPwriteSize);	\
+				});																					\
+			});																						\
+		})
+
+#	define sm_pread(FileDecriptor, Buffer, Size, Offset)				\
+		({																\
+			sm_init();													\
+			OSAtomicIncrement32(&gPreadCount);							\
+			OSAtomicAdd64((int64_t)(Size), &gPreadSize);				\
+			ssize_t res = pread(FileDecriptor, Buffer, Size, Offset);	\
+			res;														\
+		})
+
+#	define sm_pwrite(FileDecriptor, Buffer, Size, Offset)				\
+		({																\
+			sm_init();													\
+			OSAtomicIncrement32(&gPwriteCount);							\
+			OSAtomicAdd64((int64_t)(Size), &gPwriteSize);				\
+			ssize_t res = pwrite(FileDecriptor, Buffer, Size, Offset);	\
+			res;														\
+		})
+
+#else
+#	define sm_pread(FileDecriptor, Buffer, Size, Offset)	pread(FileDecriptor, Buffer, Size, Offset)
+#	define sm_pwrite(FileDecriptor, Buffer, Size, Offset)	pwrite(FileDecriptor, Buffer, Size, Offset)
 #endif
 
 // Round up or down. Round should be a power of 2.
@@ -222,7 +270,7 @@ bool SMCryptoFileCanOpen(const char *path)
 	// Try to read prefix.
 	SMCryptoFilePrefix	prefix;
 	
-	if (pread(fd, &prefix, sizeof(prefix), kCFFilePrefixOffset) != sizeof(prefix))
+	if (sm_pread(fd, &prefix, sizeof(prefix), kCFFilePrefixOffset) != sizeof(prefix))
 		goto clean;
 	
 	// Check prefix.
@@ -232,7 +280,7 @@ bool SMCryptoFileCanOpen(const char *path)
 	// Try to read header.
 	SMCryptoFileHeader	header;
 	
-	if (pread(fd, &header, sizeof(header), kCFFileHeaderOffset) != sizeof(header))
+	if (sm_pread(fd, &header, sizeof(header), kCFFileHeaderOffset) != sizeof(header))
 		goto clean;
 
 	// File is openable.
@@ -1126,7 +1174,7 @@ bool SMCryptoFileTruncate(SMCryptoFile *obj, uint64_t length, SMCryptoFileError 
 			// > Read block.
 			uint8_t fileBlock[kCFFileBlockSize];
 
-			if (pread(obj->fd, fileBlock, sizeof(fileBlock), kCFFileDataOffset + truncateOffset) != sizeof(fileBlock))
+			if (sm_pread(obj->fd, fileBlock, sizeof(fileBlock), kCFFileDataOffset + truncateOffset) != sizeof(fileBlock))
 			{
 				*error = SMCryptoFileErrorIO;
 				return false;
@@ -1154,7 +1202,7 @@ bool SMCryptoFileTruncate(SMCryptoFile *obj, uint64_t length, SMCryptoFileError 
 			}
 			
 			// > Write block back.
-			if (pwrite(obj->fd, fileBlock, sizeof(fileBlock), kCFFileDataOffset + truncateOffset) != sizeof(fileBlock))
+			if (sm_pwrite(obj->fd, fileBlock, sizeof(fileBlock), kCFFileDataOffset + truncateOffset) != sizeof(fileBlock))
 			{
 				*error = SMCryptoFileErrorIO;
 				return false;
@@ -1416,7 +1464,7 @@ static bool SMCryptoFileFillGapToLength(SMCryptoFile *obj, uint64_t length, SMCr
 		}
 		
 		// > Write crypte zero bytes.
-		if (pwrite(obj->fd, fileCache, sizeof(fileCache), kCFFileDataOffset + offset) != sizeof(fileCache))
+		if (sm_pwrite(obj->fd, fileCache, sizeof(fileCache), kCFFileDataOffset + offset) != sizeof(fileCache))
 		{
 			*error = SMCryptoFileErrorIO;
 			return false;
@@ -1507,7 +1555,7 @@ static bool SMCryptoFileFree(SMCryptoFile *obj)
 
 static bool SMCryptoFilePrefixRead(SMCryptoFile *obj, SMCryptoFileError *error)
 {
-	if (pread(obj->fd, &obj->prefix, sizeof(obj->prefix), kCFFilePrefixOffset) != sizeof(obj->prefix))
+	if (sm_pread(obj->fd, &obj->prefix, sizeof(obj->prefix), kCFFilePrefixOffset) != sizeof(obj->prefix))
 	{
 		*error = SMCryptoFileErrorIO;
 		return false;
@@ -1518,7 +1566,7 @@ static bool SMCryptoFilePrefixRead(SMCryptoFile *obj, SMCryptoFileError *error)
 
 static bool SMCryptoFilePrefixWrite(SMCryptoFile *obj, SMCryptoFileError *error)
 {
-	if (pwrite(obj->fd, &obj->prefix, sizeof(obj->prefix), kCFFilePrefixOffset) != sizeof(obj->prefix))
+	if (sm_pwrite(obj->fd, &obj->prefix, sizeof(obj->prefix), kCFFilePrefixOffset) != sizeof(obj->prefix))
 	{
 		*error = SMCryptoFileErrorIO;
 		return false;
@@ -1562,7 +1610,7 @@ static bool SMCryptoFileHeaderRead(SMCryptoFile *obj, SMCryptoFileError *error)
 	// Read crypted header.
 	char cryptedHeader[sizeof(obj->header)];
 
-	if (pread(obj->fd, cryptedHeader, sizeof(cryptedHeader), kCFFileHeaderOffset) != sizeof(cryptedHeader))
+	if (sm_pread(obj->fd, cryptedHeader, sizeof(cryptedHeader), kCFFileHeaderOffset) != sizeof(cryptedHeader))
 	{
 		*error = SMCryptoFileErrorIO;
 		return false;
@@ -1601,7 +1649,7 @@ static bool SMCryptoFileHeaderWrite(SMCryptoFile *obj, SMCryptoFileError *error)
 	}
 
 	// Write crypted header.
-	if (pwrite(obj->fd, cryptedHeader, sizeof(cryptedHeader), kCFFileHeaderOffset) != sizeof(cryptedHeader))
+	if (sm_pwrite(obj->fd, cryptedHeader, sizeof(cryptedHeader), kCFFileHeaderOffset) != sizeof(cryptedHeader))
 	{
 		*error = SMCryptoFileErrorIO;
 		return false;
@@ -1661,7 +1709,7 @@ static bool SMCryptoFileCacheFlush(SMCryptoFile *obj, SMCryptoFileError *error)
 			uint8_t fileBlock[kCFFileBlockSize];
 
 			// > Read.
-			if (pread(obj->fd, fileBlock, sizeof(fileBlock), kCFFileDataOffset + obj->cachedDataOffset + offset) != sizeof(fileBlock))
+			if (sm_pread(obj->fd, fileBlock, sizeof(fileBlock), kCFFileDataOffset + obj->cachedDataOffset + offset) != sizeof(fileBlock))
 			{
 				*error = SMCryptoFileErrorIO;
 				return false;
@@ -1693,7 +1741,7 @@ static bool SMCryptoFileCacheFlush(SMCryptoFile *obj, SMCryptoFileError *error)
 		return false;
 	
 	// Write tempCache on disk.
-	if (pwrite(obj->fd, tempCache, (size_t)fullSize, kCFFileDataOffset +  obj->cachedDataOffset) != fullSize)
+	if (sm_pwrite(obj->fd, tempCache, (size_t)fullSize, kCFFileDataOffset +  obj->cachedDataOffset) != fullSize)
 	{
 		*error = SMCryptoFileErrorIO;
 		return false;
@@ -1719,6 +1767,7 @@ static bool SMCryptoFileCachePrepareReadingAtCurrentOffset(SMCryptoFile *obj, SM
 	if (SMCryptoFileFlush(obj, SMCryptoFileSyncNo, error) == false)
 		return false;
 	
+	// Round the current offset to speed-up possible futur writes.
 	uint64_t currentOffset = SMRoundDown(obj->currentOffset, kCFFileBlockSize);
 	
 	// Read wanted offset.
@@ -1751,7 +1800,7 @@ static bool SMCryptoFileCachePrepareReadingAtCurrentOffset(SMCryptoFile *obj, SM
 		uint8_t fileCache[kCFFileCacheSize];
 
 		// > Read.
-		if (pread(obj->fd, fileCache, (size_t)cacheSize, kCFFileDataOffset + currentOffset) != cacheSize)
+		if (sm_pread(obj->fd, fileCache, (size_t)cacheSize, kCFFileDataOffset + currentOffset) != cacheSize)
 		{
 			*error = SMCryptoFileErrorIO;
 			return false;
@@ -1798,6 +1847,10 @@ static bool SMCryptoFileCachePrepareWritingAtCurrentOffset(SMCryptoFile *obj, SM
 	{
 		// currentOffset is misaligned : align it by reading the block where the offset is.
 		
+		// Note - we read a block to realign currentOffset there instead of in SMCryptoFileCacheFlush because:
+		// 1 - We can gain pread / pwrite calls in case of a little rewind after a write because in this case, the cache will probably be already there saving a cache flush.
+		// 2 - At worst, there is no loss : we will have to realign the buffer there or in cache flush, so in any case we will have to read at least one block.
+		
 		uint64_t blockNumber = currentOffset / kCFFileBlockSize;
 		
 		// > Read crypted blocks.
@@ -1811,7 +1864,7 @@ static bool SMCryptoFileCachePrepareWritingAtCurrentOffset(SMCryptoFile *obj, SM
 			uint8_t fileBlock[kCFFileBlockSize];
 
 			// > Read.
-			if (pread(obj->fd, fileBlock, sizeof(fileBlock), kCFFileDataOffset + currentOffset) != sizeof(fileBlock))
+			if (sm_pread(obj->fd, fileBlock, sizeof(fileBlock), kCFFileDataOffset + currentOffset) != sizeof(fileBlock))
 			{
 				*error = SMCryptoFileErrorIO;
 				return false;
