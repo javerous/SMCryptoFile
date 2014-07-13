@@ -243,7 +243,9 @@ clean:
 {
 	const char			*password = "mlkezldkqs654qs8";
 	SMCryptoFileError	error;
-
+	SMCryptoFile		*nfile = NULL;
+	const char			*npath = NULL;
+	
 	// Create standard crypto file.
 	const char		*path = [[TestHelper generateTempPath] UTF8String];
 	SMCryptoFile	*file = SMCryptoFileCreate(path, password, SMCryptoFileKeySize128, &error);
@@ -255,8 +257,8 @@ clean:
 	}
 	
 	// Impersonate this file.
-	const char		*npath = [[TestHelper generateTempPath] UTF8String];
-	SMCryptoFile	*nfile = SMCryptoFileCreateImpersonated(file, npath, &error);
+	npath = [[TestHelper generateTempPath] UTF8String];
+	nfile = SMCryptoFileCreateImpersonated(file, npath, &error);
 	
 	if (!nfile)
 	{

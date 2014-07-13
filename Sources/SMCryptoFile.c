@@ -1539,7 +1539,7 @@ static bool SMCryptoFileFree(SMCryptoFile *obj)
 	size_t allocSize = SMRoundUp(sizeof(SMCryptoFile), getpagesize());
 
 	// Set to 0 before unlocking.
-	memset(obj, 0, allocSize);
+	memset_s(obj, allocSize, 0, allocSize);
 	
 	// Unlock.
 	munlock(obj, allocSize);

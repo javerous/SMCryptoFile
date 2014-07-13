@@ -257,6 +257,9 @@ clean:
 
 - (void)testOpen_BadFormat
 {
+	FILE			*rfile = NULL;
+	SMCryptoFile	*file = NULL;
+
 	// Generate temp path.
 	const char *path = [[TestHelper generateTempPath] UTF8String];
 	
@@ -267,7 +270,7 @@ clean:
 	}
 	
 	// Create a random file.
-	FILE *rfile = fopen(path, "w+");
+	rfile = fopen(path, "w+");
 	
 	if (!rfile)
 	{
@@ -290,8 +293,7 @@ clean:
 	rfile = NULL;
 	
 	// Test open.
-	SMCryptoFileError	error;
-	SMCryptoFile		*file = NULL;
+	SMCryptoFileError error;
 	
 	file = SMCryptoFileOpen(path, "azerty", false, &error);
 	
