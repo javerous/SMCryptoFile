@@ -90,6 +90,8 @@ static void shellLog(void *pArg, int iErrCode, const char *zMsg)
 	const char	*uriPath = [[NSString stringWithFormat:@"file://%@?crypto-uuid=%s", tempPath, uuid] UTF8String];
 	
 	sqlite3		*dtb = NULL;
+	sqlite3_stmt *stmt = NULL;
+	
 	int			result;
 	
 	// Create database.
@@ -130,8 +132,6 @@ static void shellLog(void *pArg, int iErrCode, const char *zMsg)
 	}
 	
 	// Create statement.
-	sqlite3_stmt *stmt = NULL;
-	
 	result = sqlite3_prepare_v2(dtb, "SELECT * FROM sqlite_master WHERE type='table'", -1, &stmt, NULL);
 	
 	if (result != SQLITE_OK)
