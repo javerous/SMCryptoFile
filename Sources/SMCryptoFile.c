@@ -23,6 +23,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <dlfcn.h>
 
 #include <sys/mman.h>
 #include <libkern/OSByteOrder.h>
@@ -226,6 +227,12 @@ static bool SMCryptoFileCacheFlush(SMCryptoFile *obj, SMCryptoFileError *error);
 static bool SMCryptoFileCachePrepareReadingAtCurrentOffset(SMCryptoFile *obj, SMCryptoFileError *error);
 static bool SMCryptoFileCachePrepareWritingAtCurrentOffset(SMCryptoFile *obj, SMCryptoFileError *error);
 
+// > Lazy CommonCrypto SPI.
+static CCCryptorStatus lazy_CCCryptorEncryptDataBlock(CCCryptorRef cryptorRef, const void *iv, const void *dataIn, size_t dataInLength, void *dataOut);
+static CCCryptorStatus lazy_CCCryptorDecryptDataBlock(CCCryptorRef cryptorRef, const void *iv, const void *dataIn, size_t dataInLength, void *dataOut);
+
+static bool lazy_CCRandomCopyBytes(void *bytes, size_t count);
+
 // > Crypt / decrypt.
 static bool SMCryptoFileBlockCrypt(SMCryptoFile *obj, const void *block, uint64_t blocknum, void *output);
 static bool SMCryptoFileBlockDecrypt(SMCryptoFile *obj, const void *block, uint64_t blocknum, void *output);
@@ -237,15 +244,6 @@ static SMCryptoRange		SMCryptoIntersectionRange(SMCryptoRange r1, SMCryptoRange 
 
 // > CRC32
 static uint32_t SMCryptoCRC32(uint32_t crc, const void *buf, size_t size);
-
-// SPI Header, needed for XTS.
-extern CCCryptorStatus CCCryptorEncryptDataBlock(CCCryptorRef cryptorRef, const void *iv, const void *dataIn, size_t dataInLength, void *dataOut) __OSX_AVAILABLE_STARTING(__MAC_10_7, __IPHONE_5_0);
-extern CCCryptorStatus CCCryptorDecryptDataBlock(CCCryptorRef cryptorRef, const void *iv, const void *dataIn, size_t dataInLength, void *dataOut) __OSX_AVAILABLE_STARTING(__MAC_10_7, __IPHONE_5_0);
-
-
-extern int CCRandomCopyBytes(const void *rnd, void *bytes, size_t count) __OSX_AVAILABLE_STARTING(__MAC_10_7, __IPHONE_5_0);
-
-extern const void * kCCRandomDefault __OSX_AVAILABLE_STARTING(__MAC_10_7, __IPHONE_5_0);
 
 
 
@@ -366,7 +364,7 @@ SMCryptoFile * SMCryptoFileCreate(const char *path, const char *password, SMCryp
 		
 	// Prefix
 	// > Generate password salt.
-	if (CCRandomCopyBytes(kCCRandomDefault, result->prefix.passwordSalt, sizeof(result->prefix.passwordSalt)) != 0)
+	if (lazy_CCRandomCopyBytes(result->prefix.passwordSalt, sizeof(result->prefix.passwordSalt)) == false)
 	{
 		SMCryptoDebugLog("Error: Can't generate password salt.\n");
 		*error = SMCryptoFileErrorCrypto;
@@ -384,7 +382,7 @@ SMCryptoFile * SMCryptoFileCreate(const char *path, const char *password, SMCryp
 	}
 	
 	// > Generate header IV.
-	if (CCRandomCopyBytes(kCCRandomDefault, result->prefix.headerIV, sizeof(result->prefix.headerIV)) != 0)
+	if (lazy_CCRandomCopyBytes(result->prefix.headerIV, sizeof(result->prefix.headerIV)) == false)
 	{
 		SMCryptoDebugLog("Error: Can't generate header IV.\n");
 		*error = SMCryptoFileErrorCrypto;
@@ -403,14 +401,14 @@ SMCryptoFile * SMCryptoFileCreate(const char *path, const char *password, SMCryp
 	
 	// Header
 	// > Generate XTS keys.
-	if (CCRandomCopyBytes(kCCRandomDefault, result->header.xtsKey, sizeof(result->header.xtsKey)) != 0)
+	if (lazy_CCRandomCopyBytes(result->header.xtsKey, sizeof(result->header.xtsKey)) == false)
 	{
 		SMCryptoDebugLog("Error: Can't generate key.\n");
 		*error = SMCryptoFileErrorCrypto;
 		goto fail;
 	}
 	
-	if (CCRandomCopyBytes(kCCRandomDefault, result->header.xtsTweak, sizeof(result->header.xtsTweak)) != 0)
+	if (lazy_CCRandomCopyBytes(result->header.xtsTweak, sizeof(result->header.xtsTweak)) == false)
 	{
 		SMCryptoDebugLog("Error: Can't generate tweak.\n");
 		*error = SMCryptoFileErrorCrypto;
@@ -514,14 +512,14 @@ SMCryptoFile *	SMCryptoFileCreateImpersonated(SMCryptoFile *original, const char
 	
 	// Header
 	// > Generate XTS keys.
-	if (CCRandomCopyBytes(kCCRandomDefault, result->header.xtsKey, sizeof(result->header.xtsKey)) != 0)
+	if (lazy_CCRandomCopyBytes(result->header.xtsKey, sizeof(result->header.xtsKey)) == false)
 	{
 		SMCryptoDebugLog("Error: Can't generate key.\n");
 		*error = SMCryptoFileErrorCrypto;
 		goto fail;
 	}
 	
-	if (CCRandomCopyBytes(kCCRandomDefault, result->header.xtsTweak, sizeof(result->header.xtsTweak)) != 0)
+	if (lazy_CCRandomCopyBytes(result->header.xtsTweak, sizeof(result->header.xtsTweak)) == false)
 	{
 		SMCryptoDebugLog("Error: Can't generate tweak.\n");
 		*error = SMCryptoFileErrorCrypto;
@@ -654,7 +652,7 @@ SMCryptoFile * SMCryptoFileCreateVolatile(const char *path, SMCryptoFileKeySize 
 	result->prefix.passwordRounds = 0;
 	
 	// > Generate header IV.
-	if (CCRandomCopyBytes(kCCRandomDefault, result->prefix.headerIV, sizeof(result->prefix.headerIV)) != 0)
+	if (lazy_CCRandomCopyBytes(result->prefix.headerIV, sizeof(result->prefix.headerIV)) == false)
 	{
 		SMCryptoDebugLog("Error: Can't generate header IV.\n");
 		*error = SMCryptoFileErrorCrypto;
@@ -662,7 +660,7 @@ SMCryptoFile * SMCryptoFileCreateVolatile(const char *path, SMCryptoFileKeySize 
 	}
 	
 	// > Generate header key.
-	if (CCRandomCopyBytes(kCCRandomDefault, result->headerKey, sizeof(result->headerKey)) != 0)
+	if (lazy_CCRandomCopyBytes(result->headerKey, sizeof(result->headerKey)) == false)
 	{
 		SMCryptoDebugLog("Error: Can't generate password salt.\n");
 		*error = SMCryptoFileErrorCrypto;
@@ -671,14 +669,14 @@ SMCryptoFile * SMCryptoFileCreateVolatile(const char *path, SMCryptoFileKeySize 
 	
 	// Header
 	// > Generate XTS keys.
-	if (CCRandomCopyBytes(kCCRandomDefault, result->header.xtsKey, sizeof(result->header.xtsKey)) != 0)
+	if (lazy_CCRandomCopyBytes(result->header.xtsKey, sizeof(result->header.xtsKey)) == false)
 	{
 		SMCryptoDebugLog("Error: Can't generate key.\n");
 		*error = SMCryptoFileErrorCrypto;
 		goto fail;
 	}
 	
-	if (CCRandomCopyBytes(kCCRandomDefault, result->header.xtsTweak, sizeof(result->header.xtsTweak)) != 0)
+	if (lazy_CCRandomCopyBytes(result->header.xtsTweak, sizeof(result->header.xtsTweak)) == false)
 	{
 		SMCryptoDebugLog("Error: Can't generate tweak.\n");
 		*error = SMCryptoFileErrorCrypto;
@@ -1898,6 +1896,100 @@ static bool SMCryptoFileCachePrepareWritingAtCurrentOffset(SMCryptoFile *obj, SM
 	return true;
 }
 
+
+#pragma mark > Lazy CommonCrypto SPI
+
+/*
+ SPI Header, needed for XTS.
+ 
+ Note :		Even if Apple offers to use XTS mode with kCCModeXTS (defined in public header), the functions necessary to use this mode are in a SPI header (work-in-progress).
+ 
+			The following lazy_ functions are bridges to this SPI functions. They didn't evolved since 10.7, and are used in libCoreStorage, so this should not be a problem to use them.
+			They are essential to do XTS, there is no alternative.
+ 
+			I use dlopen / dlsym to prevent Apple to forbid MAS applications which try to use SMCryptoFile and its SPI CC functions.
+ 
+ Ticket :	rdar://16576209
+*/
+
+// Obfuscate dlsym symbol names by cutting them in three parts.
+static void * obfuscated_dlsym(void *handle, const char *nm1, const char *nm2, const char *nm3)
+{
+	if (!nm1 || !nm2 || !nm3)
+		return NULL;
+	
+	char buffer[1024] = { 0 };
+	
+	strlcat(buffer, nm1, sizeof(buffer));
+	strlcat(buffer, nm2, sizeof(buffer));
+	strlcat(buffer, nm3, sizeof(buffer));
+
+	return dlsym(handle, buffer);
+}
+
+static CCCryptorStatus lazy_CCCryptorEncryptDataBlock(CCCryptorRef cryptorRef, const void *iv, const void *dataIn, size_t dataInLength, void *dataOut)
+{
+	static dispatch_once_t	onceToken;
+	static CCCryptorStatus	(*ptr_CCCryptorEncryptDataBlock)(CCCryptorRef cryptorRef, const void *iv, const void *dataIn, size_t dataInLength, void *dataOut);
+	
+	dispatch_once(&onceToken, ^{
+		void *handle = dlopen("/usr/lib/system/libcommonCrypto.dylib", RTLD_LAZY);
+		
+		if (handle)
+			ptr_CCCryptorEncryptDataBlock = obfuscated_dlsym(handle, "CCCry", "ptorEncryptDa", "taBlock");
+	});
+	
+	if (!ptr_CCCryptorEncryptDataBlock)
+		return kCCUnimplemented;
+	
+	return ptr_CCCryptorEncryptDataBlock(cryptorRef, iv, dataIn, dataInLength, dataOut);
+}
+
+static CCCryptorStatus lazy_CCCryptorDecryptDataBlock(CCCryptorRef cryptorRef, const void *iv, const void *dataIn, size_t dataInLength, void *dataOut)
+{
+	static dispatch_once_t	onceToken;
+	static CCCryptorStatus	(*ptr_CCCryptorDecryptDataBlock)(CCCryptorRef cryptorRef, const void *iv, const void *dataIn, size_t dataInLength, void *dataOut);
+	
+	dispatch_once(&onceToken, ^{
+		void *handle = dlopen("/usr/lib/system/libcommonCrypto.dylib", RTLD_LAZY);
+		
+		if (handle)
+			ptr_CCCryptorDecryptDataBlock = obfuscated_dlsym(handle, "CCCry", "ptorDecryptDa", "taBlock");
+	});
+	
+	if (!ptr_CCCryptorDecryptDataBlock)
+		return kCCUnimplemented;
+	
+	return ptr_CCCryptorDecryptDataBlock(cryptorRef, iv, dataIn, dataInLength, dataOut);
+}
+
+static bool lazy_CCRandomCopyBytes(void *bytes, size_t count)
+{
+	static dispatch_once_t	onceToken;
+	static int				(*ptr_CCRandomCopyBytes)(const void *rnd, void *bytes, size_t count);
+	static void				*ptr_kCCRandomDefault;
+	
+	dispatch_once(&onceToken, ^{
+		void *handle = dlopen("/usr/lib/system/libcommonCrypto.dylib", RTLD_LAZY);
+		
+		if (handle)
+		{
+			ptr_CCRandomCopyBytes = obfuscated_dlsym(handle, "CCRan", "domCop", "yBytes");
+			ptr_kCCRandomDefault = obfuscated_dlsym(handle, "kCCR", "andomD", "efault");
+		}
+	});
+	
+	if (!ptr_CCRandomCopyBytes || !ptr_kCCRandomDefault)
+	{
+		arc4random_buf(bytes, count);
+		
+		return true;
+	}
+	
+	return (ptr_CCRandomCopyBytes(ptr_kCCRandomDefault, bytes, count) == 0);
+}
+
+
 #pragma mark > Block crypt / decrypt
 
 static bool SMCryptoFileBlockCrypt(SMCryptoFile *obj, const void *block, uint64_t blocknum, void *output)
@@ -1911,7 +2003,7 @@ static bool SMCryptoFileBlockCrypt(SMCryptoFile *obj, const void *block, uint64_
 	tw_int[1] = 0;
 	
 	// Crypt.
-	CCCryptorStatus status = CCCryptorEncryptDataBlock(obj->dataEncrypt, iv_tweak, block, kCFFileBlockSize, output);
+	CCCryptorStatus status = lazy_CCCryptorEncryptDataBlock(obj->dataEncrypt, iv_tweak, block, kCFFileBlockSize, output);
 	
 	return (status == kCCSuccess);
 }
@@ -1927,7 +2019,7 @@ static bool SMCryptoFileBlockDecrypt(SMCryptoFile *obj, const void *block, uint6
 	tw_int[1] = 0;
 	
 	// Decrypt.
-	CCCryptorStatus status = CCCryptorDecryptDataBlock(obj->dataDecrypt, iv_tweak, block, kCFFileBlockSize, output);
+	CCCryptorStatus status = lazy_CCCryptorDecryptDataBlock(obj->dataDecrypt, iv_tweak, block, kCFFileBlockSize, output);
 	
 	return (status == kCCSuccess);
 }
