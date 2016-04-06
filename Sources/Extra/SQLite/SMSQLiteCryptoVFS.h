@@ -35,10 +35,10 @@
 # include "SMCryptoFile.h"
 
 // -- Properties --
-const char *	SMSQLiteCryptoVFSName(); // Return this VFS name. Should be used with sqlite3_open_v2 and ATTACH.
+const char *	SMSQLiteCryptoVFSName(void); // Return this VFS name. Should be used with sqlite3_open_v2 and ATTACH.
 
 // -- Register --
-int				SMSQLiteCryptoVFSRegister(); // Register this VFS to SQLite. Should be done before any other SMSQLiteCrypto* call.
+int				SMSQLiteCryptoVFSRegister(void); // Register this VFS to SQLite. Should be done before any other SMSQLiteCrypto* call.
 
 // -- Settings --
 const char *	SMSQLiteCryptoVFSSettingsAdd(const char *password, SMCryptoFileKeySize keySize); // Return an uuid that you should use with "crypto-uuid" URI parameter. The uuid pointer is no valid anymore after a settings remove. keySize is ignored when opening an existing crypted base.

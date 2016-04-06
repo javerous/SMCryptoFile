@@ -150,7 +150,7 @@ static int VFSCryptDeviceCharacteristics(sqlite3_file *pFile);
 */
 #pragma mark - Properties
 
-const char *SMSQLiteCryptoVFSName()
+const char *SMSQLiteCryptoVFSName(void)
 {
 	return "SMSQLiteCryptoVFS";
 }
@@ -162,7 +162,7 @@ const char *SMSQLiteCryptoVFSName()
 */
 #pragma mark - Register
 
-int SMSQLiteCryptoVFSRegister()
+int SMSQLiteCryptoVFSRegister(void)
 {
 	static dispatch_once_t	onceToken;
 	static sqlite3_vfs		vfscrypt;
@@ -182,7 +182,7 @@ int SMSQLiteCryptoVFSRegister()
 			return;
 		}
 		
-		// Convigure crypt VFS.
+		// Configure crypt VFS.
 		vfscrypt = *rootvfs;
 		
 		vfscrypt.szOsFile = sizeof(VFSCryptFile);
@@ -409,7 +409,7 @@ void * VFSCryptListGetItem(VFSCryptList *list, const char *key)
 	if (!list || !key)
 		return NULL;
 	
-	size_t		keyLen = strlen(key);
+	size_t				keyLen = strlen(key);
 	VFSCryptListItem	*item = list->first;
 	
 	while (item)
@@ -478,7 +478,7 @@ static char *VFSCryptMainDatabasePath(const char *subFilePath)
 		return NULL;
 	
 	// Get size.
-	ssize_t size = strlen(subFilePath);
+	size_t size = strlen(subFilePath);
 	
 	if (size == 0)
 		return NULL;
@@ -740,6 +740,13 @@ static int VFSCryptClose(sqlite3_file *pFile)
 
 static int VFSCryptRead(sqlite3_file *pFile, void *zBuf, int iAmt, sqlite_int64 iOfst)
 {
+	// Check parameters.
+	if (iAmt < 0)
+	{
+		sqlite3_log(SQLITE_INTERNAL, "VFS error (VFSCryptRead): negative buffer size");
+		return SQLITE_INTERNAL;
+	}
+	
 	VFSCryptFile *p = (VFSCryptFile *)pFile;
 
 	SMSQLiteCryptoVFSSetFileCryptoError(SMCryptoFileErrorNo);
@@ -764,7 +771,7 @@ static int VFSCryptRead(sqlite3_file *pFile, void *zBuf, int iAmt, sqlite_int64 
 	// Read.
 	int64_t size;
 	
-	size = SMCryptoFileRead(p->file, zBuf, iAmt, &error);
+	size = SMCryptoFileRead(p->file, zBuf, (uint64_t)iAmt, &error);
 	
 	if (size == -1)
 	{
@@ -786,6 +793,13 @@ static int VFSCryptRead(sqlite3_file *pFile, void *zBuf, int iAmt, sqlite_int64 
 
 static int VFSCryptWrite(sqlite3_file *pFile, const void *zBuf, int iAmt, sqlite_int64 iOfst)
 {
+	// Check parameters.
+	if (iAmt < 0)
+	{
+		sqlite3_log(SQLITE_INTERNAL, "VFS error (VFSCryptWrite): negative buffer size");
+		return SQLITE_INTERNAL;
+	}
+	
 	VFSCryptFile *p = (VFSCryptFile *)pFile;
 	
 	SMSQLiteCryptoVFSSetFileCryptoError(SMCryptoFileErrorNo);
@@ -808,7 +822,7 @@ static int VFSCryptWrite(sqlite3_file *pFile, const void *zBuf, int iAmt, sqlite
 	}
 	
 	// Write.
-	if (SMCryptoFileWrite(p->file, zBuf, iAmt, &error) == false)
+	if (SMCryptoFileWrite(p->file, zBuf, (uint64_t)iAmt, &error) == false)
 	{
 		SMSQLiteCryptoVFSSetFileCryptoError(error);
 		sqlite3_log(SQLITE_IOERR_WRITE, "Crypto file error (SMCryptoFileWrite / VFSCryptWrite) - error %d", error);
@@ -820,6 +834,13 @@ static int VFSCryptWrite(sqlite3_file *pFile, const void *zBuf, int iAmt, sqlite
 
 static int VFSCryptTruncate(sqlite3_file *pFile, sqlite_int64 size)
 {
+	// Check parameters.
+	if (size < 0)
+	{
+		sqlite3_log(SQLITE_INTERNAL, "VFS error (VFSCryptTruncate): negative truncate size");
+		return SQLITE_INTERNAL;
+	}
+	
 	VFSCryptFile *p = (VFSCryptFile *)pFile;
 	
 	SMSQLiteCryptoVFSSetFileCryptoError(SMCryptoFileErrorNo);
@@ -834,7 +855,7 @@ static int VFSCryptTruncate(sqlite3_file *pFile, sqlite_int64 size)
 	// Truncate.
 	SMCryptoFileError error;
 
-	if  (SMCryptoFileTruncate(p->file, size, &error) == false)
+	if  (SMCryptoFileTruncate(p->file, (uint64_t)size, &error) == false)
 	{
 		SMSQLiteCryptoVFSSetFileCryptoError(error);
 		sqlite3_log(SQLITE_IOERR_TRUNCATE, "Crypto file error (SMCryptoFileTruncate / VFSCryptTruncate) - error %d", error);
@@ -889,7 +910,7 @@ static int VFSCryptFileSize(sqlite3_file *pFile, sqlite_int64 *pSize)
 		return SQLITE_INTERNAL;
 	}
 	
-	*pSize = SMCryptoFileSize(p->file);
+	*pSize = (sqlite_int64)SMCryptoFileSize(p->file);
 	
 	return SQLITE_OK;
 }
