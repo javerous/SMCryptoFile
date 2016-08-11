@@ -61,7 +61,6 @@
 */
 #pragma mark - Macros
 
-
 // Debug log.
 #if defined(DEBUG_LOG) && DEBUG_LOG
 #	define SMCryptoDebugLog(Str, Arg...) fprintf(stderr, Str, ## Arg)
@@ -233,8 +232,6 @@ static bool SMCryptoFileCachePrepareWritingAtCurrentOffset(SMCryptoFile *obj, SM
 static CCCryptorStatus lazy_CCCryptorEncryptDataBlock(CCCryptorRef cryptorRef, const void *iv, const void *dataIn, size_t dataInLength, void *dataOut);
 static CCCryptorStatus lazy_CCCryptorDecryptDataBlock(CCCryptorRef cryptorRef, const void *iv, const void *dataIn, size_t dataInLength, void *dataOut);
 
-static bool lazy_CCRandomCopyBytes(void *bytes, size_t count);
-
 // > Crypt / decrypt.
 static bool SMCryptoFileBlockCrypt(SMCryptoFile *obj, const void *block, uint64_t blocknum, void *output);
 static bool SMCryptoFileBlockDecrypt(SMCryptoFile *obj, const void *block, uint64_t blocknum, void *output);
@@ -243,6 +240,9 @@ static bool SMCryptoFileBlockDecrypt(SMCryptoFile *obj, const void *block, uint6
 static inline SMCryptoRange SMCryptoMakeRange(uint64_t location, uint64_t length);
 static inline uint64_t		SMCryptoMaxRange(SMCryptoRange range);
 static SMCryptoRange		SMCryptoIntersectionRange(SMCryptoRange r1, SMCryptoRange r2);
+
+// > Random.
+static void SMCryptoRandomCopyBytes(void *bytes, size_t count);
 
 // > CRC32
 static uint32_t SMCryptoCRC32(uint32_t crc, const void *buf, size_t size);
@@ -366,12 +366,7 @@ SMCryptoFile * SMCryptoFileCreate(const char *path, const char *password, SMCryp
 		
 	// Prefix
 	// > Generate password salt.
-	if (lazy_CCRandomCopyBytes(result->prefix.passwordSalt, sizeof(result->prefix.passwordSalt)) == false)
-	{
-		SMCryptoDebugLog("Error: Can't generate password salt.\n");
-		*error = SMCryptoFileErrorCrypto;
-		goto fail;
-	}
+	SMCryptoRandomCopyBytes(result->prefix.passwordSalt, sizeof(result->prefix.passwordSalt));
 	
 	// > Calibrate password round count.
 	result->prefix.passwordRounds = CCCalibratePBKDF(kCCPBKDF2, passwordLen, sizeof(result->prefix.passwordSalt), kCCPRFHmacAlgSHA256, keySize, 100); // 1/10 sec
@@ -384,12 +379,7 @@ SMCryptoFile * SMCryptoFileCreate(const char *path, const char *password, SMCryp
 	}
 	
 	// > Generate header IV.
-	if (lazy_CCRandomCopyBytes(result->prefix.headerIV, sizeof(result->prefix.headerIV)) == false)
-	{
-		SMCryptoDebugLog("Error: Can't generate header IV.\n");
-		*error = SMCryptoFileErrorCrypto;
-		goto fail;
-	}
+	SMCryptoRandomCopyBytes(result->prefix.headerIV, sizeof(result->prefix.headerIV));
 	
 	// > Derivate password to header key.
 	status = CCKeyDerivationPBKDF(kCCPBKDF2, password, passwordLen, result->prefix.passwordSalt, sizeof(result->prefix.passwordSalt), kCCPRFHmacAlgSHA256, result->prefix.passwordRounds, result->headerKey, keySize);
@@ -403,19 +393,8 @@ SMCryptoFile * SMCryptoFileCreate(const char *path, const char *password, SMCryp
 	
 	// Header
 	// > Generate XTS keys.
-	if (lazy_CCRandomCopyBytes(result->header.xtsKey, sizeof(result->header.xtsKey)) == false)
-	{
-		SMCryptoDebugLog("Error: Can't generate key.\n");
-		*error = SMCryptoFileErrorCrypto;
-		goto fail;
-	}
-	
-	if (lazy_CCRandomCopyBytes(result->header.xtsTweak, sizeof(result->header.xtsTweak)) == false)
-	{
-		SMCryptoDebugLog("Error: Can't generate tweak.\n");
-		*error = SMCryptoFileErrorCrypto;
-		goto fail;
-	}
+	SMCryptoRandomCopyBytes(result->header.xtsKey, sizeof(result->header.xtsKey));
+	SMCryptoRandomCopyBytes(result->header.xtsTweak, sizeof(result->header.xtsTweak));
 	
 	// > Generate CRC32.
 	uint32_t crc = 0;
@@ -514,19 +493,8 @@ SMCryptoFile *	SMCryptoFileCreateImpersonated(SMCryptoFile *original, const char
 	
 	// Header
 	// > Generate XTS keys.
-	if (lazy_CCRandomCopyBytes(result->header.xtsKey, sizeof(result->header.xtsKey)) == false)
-	{
-		SMCryptoDebugLog("Error: Can't generate key.\n");
-		*error = SMCryptoFileErrorCrypto;
-		goto fail;
-	}
-	
-	if (lazy_CCRandomCopyBytes(result->header.xtsTweak, sizeof(result->header.xtsTweak)) == false)
-	{
-		SMCryptoDebugLog("Error: Can't generate tweak.\n");
-		*error = SMCryptoFileErrorCrypto;
-		goto fail;
-	}
+	SMCryptoRandomCopyBytes(result->header.xtsKey, sizeof(result->header.xtsKey));
+	SMCryptoRandomCopyBytes(result->header.xtsTweak, sizeof(result->header.xtsTweak));
 	
 	// > Generate CRC32.
 	uint32_t crc = 0;
@@ -654,36 +622,15 @@ SMCryptoFile * SMCryptoFileCreateVolatile(const char *path, SMCryptoFileKeySize 
 	result->prefix.passwordRounds = 0;
 	
 	// > Generate header IV.
-	if (lazy_CCRandomCopyBytes(result->prefix.headerIV, sizeof(result->prefix.headerIV)) == false)
-	{
-		SMCryptoDebugLog("Error: Can't generate header IV.\n");
-		*error = SMCryptoFileErrorCrypto;
-		goto fail;
-	}
+	SMCryptoRandomCopyBytes(result->prefix.headerIV, sizeof(result->prefix.headerIV));
 	
 	// > Generate header key.
-	if (lazy_CCRandomCopyBytes(result->headerKey, sizeof(result->headerKey)) == false)
-	{
-		SMCryptoDebugLog("Error: Can't generate password salt.\n");
-		*error = SMCryptoFileErrorCrypto;
-		goto fail;
-	}
+	SMCryptoRandomCopyBytes(result->headerKey, sizeof(result->headerKey));
 	
 	// Header
 	// > Generate XTS keys.
-	if (lazy_CCRandomCopyBytes(result->header.xtsKey, sizeof(result->header.xtsKey)) == false)
-	{
-		SMCryptoDebugLog("Error: Can't generate key.\n");
-		*error = SMCryptoFileErrorCrypto;
-		goto fail;
-	}
-	
-	if (lazy_CCRandomCopyBytes(result->header.xtsTweak, sizeof(result->header.xtsTweak)) == false)
-	{
-		SMCryptoDebugLog("Error: Can't generate tweak.\n");
-		*error = SMCryptoFileErrorCrypto;
-		goto fail;
-	}
+	SMCryptoRandomCopyBytes(result->header.xtsKey, sizeof(result->header.xtsKey));
+	SMCryptoRandomCopyBytes(result->header.xtsTweak, sizeof(result->header.xtsTweak));
 	
 	// Create data cryptor.
 	int			status;
@@ -1977,33 +1924,6 @@ static CCCryptorStatus lazy_CCCryptorDecryptDataBlock(CCCryptorRef cryptorRef, c
 	return ptr_CCCryptorDecryptDataBlock(cryptorRef, iv, dataIn, dataInLength, dataOut);
 }
 
-static bool lazy_CCRandomCopyBytes(void *bytes, size_t count)
-{
-	static dispatch_once_t	onceToken;
-	static int				(*ptr_CCRandomCopyBytes)(const void *rnd, void *bytes, size_t count);
-	static void				*ptr_kCCRandomDefault;
-	
-	dispatch_once(&onceToken, ^{
-		void *handle = dlopen("/usr/lib/system/libcommonCrypto.dylib", RTLD_LAZY);
-		
-		if (handle)
-		{
-			ptr_CCRandomCopyBytes = obfuscated_dlsym(handle, "CCRan", "domCop", "yBytes");
-			ptr_kCCRandomDefault = obfuscated_dlsym(handle, "kCCR", "andomD", "efault");
-		}
-	});
-	
-	if (!ptr_CCRandomCopyBytes || !ptr_kCCRandomDefault)
-	{
-		arc4random_buf(bytes, count);
-		
-		return true;
-	}
-	
-	return (ptr_CCRandomCopyBytes(ptr_kCCRandomDefault, bytes, count) == 0);
-}
-
-
 #pragma mark > Block crypt / decrypt
 
 static bool SMCryptoFileBlockCrypt(SMCryptoFile *obj, const void *block, uint64_t blocknum, void *output)
@@ -2075,6 +1995,37 @@ static SMCryptoRange SMCryptoIntersectionRange(SMCryptoRange r1, SMCryptoRange r
 	}
 	
 	return result;
+}
+
+
+#pragma mark > Random
+
+static void SMCryptoRandomCopyBytes(void *bytes, size_t count)
+{
+	// I don't want to link on Security framework just to use SecRandomCopyBytes, so…
+	static dispatch_once_t	onceToken;
+	static int				(*ptr_SecRandomCopyBytes)(const void * rnd, size_t count, uint8_t *bytes);
+	static void				**pptr_kSecRandomDefault;
+	static void				*ptr_kSecRandomDefault = NULL;
+	
+	dispatch_once(&onceToken, ^{
+		void *handle = dlopen("/System/Library/Frameworks/Security.framework/Security", RTLD_LAZY);
+		
+		if (handle)
+		{
+			ptr_SecRandomCopyBytes = obfuscated_dlsym(handle, "SecRandom", "Copy", "Bytes");
+			pptr_kSecRandomDefault = (void **)obfuscated_dlsym(handle, "kSec", "Random", "Default");
+			
+			if (pptr_kSecRandomDefault)
+				ptr_kSecRandomDefault = *pptr_kSecRandomDefault;
+		}
+	});
+	
+	if (ptr_SecRandomCopyBytes && ptr_SecRandomCopyBytes(ptr_kSecRandomDefault, count, bytes) == 0)
+		return;
+	
+	// Fall back to less secure arc4random.
+	arc4random_buf(bytes, count);
 }
 
 
