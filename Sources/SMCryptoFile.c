@@ -118,6 +118,15 @@ static dispatch_once_t gOnceToken;
 #define SMRoundUp(Value, Round)		(((Value) + ((typeof(Value))(Round) - 1)) & ~((typeof(Value))(Round) - 1))
 #define SMRoundDown(Value, Round)	((Value) & ~((typeof(Value))(Round) - 1))
 
+// Max.
+#if !defined(MAX)
+#	define MAX(A, B) ({ \
+		__typeof__ (A) __A = (A);	\
+		__typeof__ (B) __B = (B);	\
+		__A > __B ? __A : __B;		\
+	})
+#endif
+
 
 
 /*
