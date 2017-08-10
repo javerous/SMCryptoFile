@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "E839654818F6C99800CA591B"
-               BuildableName = "CryptoFileTest.xctest"
-               BlueprintName = "CryptoFileTest"
-               ReferencedContainer = "container:CryptoFileTest.xcodeproj">
+               BlueprintIdentifier = "E8B23FF91906695D007EF27B"
+               BuildableName = "CryptoSQLiteTest.xctest"
+               BlueprintName = "CryptoSQLiteTest"
+               ReferencedContainer = "container:CryptoSQLiteTest.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -32,10 +32,10 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "E839654818F6C99800CA591B"
-               BuildableName = "CryptoFileTest.xctest"
-               BlueprintName = "CryptoFileTest"
-               ReferencedContainer = "container:CryptoFileTest.xcodeproj">
+               BlueprintIdentifier = "E8B23FF91906695D007EF27B"
+               BuildableName = "CryptoSQLiteTest.xctest"
+               BlueprintName = "CryptoSQLiteTest"
+               ReferencedContainer = "container:CryptoSQLiteTest.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>

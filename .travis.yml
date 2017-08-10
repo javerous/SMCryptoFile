@@ -1,0 +1,7 @@
+language: objective-c
+osx_image: xcode8.3
+
+script:
+    - xcodebuild test -project Tests/CryptoFileTest/CryptoFileTest.xcodeproj -scheme CryptoFileTest CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+    - xcodebuild test -project Tests/CryptoFileHandleTest/CryptoFileHandleTest.xcodeproj -scheme CryptoFileHandleTest CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+    - xcodebuild test -project Tests/CryptoSQLiteTest/CryptoSQLiteTest.xcodeproj -scheme CryptoSQLiteTest CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO

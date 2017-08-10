@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "E839654818F6C99800CA591B"
-               BuildableName = "CryptoFileTest.xctest"
-               BlueprintName = "CryptoFileTest"
-               ReferencedContainer = "container:CryptoFileTest.xcodeproj">
+               BlueprintIdentifier = "E84180C61905C1BC004E2697"
+               BuildableName = "CryptoFileHandleTest.xctest"
+               BlueprintName = "CryptoFileHandleTest"
+               ReferencedContainer = "container:CryptoFileHandleTest.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -32,10 +32,10 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "E839654818F6C99800CA591B"
-               BuildableName = "CryptoFileTest.xctest"
-               BlueprintName = "CryptoFileTest"
-               ReferencedContainer = "container:CryptoFileTest.xcodeproj">
+               BlueprintIdentifier = "E84180C61905C1BC004E2697"
+               BuildableName = "CryptoFileHandleTest.xctest"
+               BlueprintName = "CryptoFileHandleTest"
+               ReferencedContainer = "container:CryptoFileHandleTest.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
