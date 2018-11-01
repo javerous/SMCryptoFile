@@ -25,9 +25,9 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <dlfcn.h>
+#include <stdatomic.h>
 
 #include <sys/mman.h>
-#include <libkern/OSByteOrder.h>
 
 #include <mach/mach.h>
 
@@ -73,11 +73,11 @@
 
 #include <libkern/OSAtomic.h>
 
-static int32_t gPreadCount = 0;
-static int32_t gPwriteCount = 0;
+static atomic_int_fast32_t gPreadCount = 0;
+static atomic_int_fast32_t gPwriteCount = 0;
 
-static int64_t gPreadSize = 0;
-static int64_t gPwriteSize = 0;
+static atomic_int_fast64_t gPreadSize = 0;
+static atomic_int_fast64_t gPwriteSize = 0;
 
 static dispatch_once_t gOnceToken;
 
@@ -94,8 +94,8 @@ static dispatch_once_t gOnceToken;
 #	define sm_pread(FileDecriptor, Buffer, Size, Offset)				\
 		({																\
 			sm_init();													\
-			OSAtomicIncrement32(&gPreadCount);							\
-			OSAtomicAdd64((int64_t)(Size), &gPreadSize);				\
+			atomic_fetch_add(&gPreadCount, 1);							\
+			atomic_fetch_add(&gPreadSize, Size);						\
 			ssize_t res = pread(FileDecriptor, Buffer, Size, Offset);	\
 			res;														\
 		})
@@ -103,8 +103,8 @@ static dispatch_once_t gOnceToken;
 #	define sm_pwrite(FileDecriptor, Buffer, Size, Offset)				\
 		({																\
 			sm_init();													\
-			OSAtomicIncrement32(&gPwriteCount);							\
-			OSAtomicAdd64((int64_t)(Size), &gPwriteSize);				\
+			atomic_fetch_add(&gPwriteCount, 1);							\
+			atomic_fetch_add(&gPwriteSize, Size);						\
 			ssize_t res = pwrite(FileDecriptor, Buffer, Size, Offset);	\
 			res;														\
 		})
