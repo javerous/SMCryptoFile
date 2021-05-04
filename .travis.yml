@@ -1,5 +1,6 @@
 language: objective-c
-osx_image: xcode12.2
+os: osx
+osx_image: xcode12.3
 
 script:
     - xcodebuild test -project Tests/CryptoFileTest/CryptoFileTest.xcodeproj -scheme CryptoFileTest CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
