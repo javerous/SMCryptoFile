@@ -25,7 +25,6 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <dlfcn.h>
-#include <stdatomic.h>
 
 #include <sys/mman.h>
 
