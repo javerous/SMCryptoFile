@@ -40,6 +40,8 @@
 */
 #pragma mark - Defines
 
+#define kCCModeXTS 				8
+
 #define kCFMagicValue			0xC3160FF4
 #define kCFCheckValue			0xB4D9E5AC
 
@@ -71,13 +73,13 @@
 // Debugs.
 #if defined(DEBUG) && DEBUG
 
-#include <libkern/OSAtomic.h>
+#include <stdatomic.h>
 
-static atomic_int_fast32_t gPreadCount = 0;
-static atomic_int_fast32_t gPwriteCount = 0;
+static atomic_uint_fast64_t gPreadCount = 0;
+static atomic_uint_fast64_t gPwriteCount = 0;
 
-static atomic_int_fast64_t gPreadSize = 0;
-static atomic_int_fast64_t gPwriteSize = 0;
+static atomic_uint_fast64_t gPreadSize = 0;
+static atomic_uint_fast64_t gPwriteSize = 0;
 
 static dispatch_once_t gOnceToken;
 
@@ -85,8 +87,8 @@ static dispatch_once_t gOnceToken;
 		({																							\
 			dispatch_once(&gOnceToken, ^{															\
 				atexit_b(^{																			\
-					fprintf(stderr, "pread:  count=%d; size=%lld\n", gPreadCount, gPreadSize);		\
-					fprintf(stderr, "pwrite: count=%d; size=%lld\n", gPwriteCount, gPwriteSize);	\
+					fprintf(stderr, "pread:  count=%llu; size=%llu\n", gPreadCount, gPreadSize);	\
+					fprintf(stderr, "pwrite: count=%llu; size=%llu\n", gPwriteCount, gPwriteSize);	\
 				});																					\
 			});																						\
 		})

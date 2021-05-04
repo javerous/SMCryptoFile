@@ -27,7 +27,7 @@
 */
 #pragma mark - Constants
 
-NSString * const SMCryptoFileHandleErrorDomain;
+extern NSString * const SMCryptoFileHandleErrorDomain;
 
 
 
