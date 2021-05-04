@@ -1,7 +1,7 @@
 /*
  * TestHelper.m
  *
- * Copyright 2014 Avérous Julien-Pierre
+ * Copyright 2021 Avérous Julien-Pierre
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
