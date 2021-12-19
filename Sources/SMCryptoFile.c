@@ -368,7 +368,7 @@ SMCryptoFile * SMCryptoFileCreate(const char *path, const char *password, SMCryp
 	result->fd = fd;
 	
 	// Hold key size.
-	result->prefix.keySize = keySizeValue;
+	result->prefix.keySize = (uint8_t)keySizeValue;
 	
 	// -- Generate crypto material --
 	int			status;
@@ -623,7 +623,7 @@ SMCryptoFile * SMCryptoFileCreateVolatile(const char *path, SMCryptoFileKeySize 
 	result->fd = fd;
 
 	// Hold key size.
-	result->prefix.keySize = keySizeValue;
+	result->prefix.keySize = (uint8_t)keySizeValue;
 	
 	// -- Generate crypto material --
 	// Prefix.
